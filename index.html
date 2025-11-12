@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #aaa; 
+        }
+
+        /* Sidebar Active State */
+        .nav-item {
+            position: relative;
+            transition: all 0.3s;
+            color: white; /* Default text color */
+        }
+        
+        /* Estado Ativo  */
+        .nav-item.active {
+            background-color: white;
+            color: #09814A; /* Active icon color */
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            /* Extensão para a direita para cobrir a margem */
+            width: calc(100% + 20px); 
+            margin-right: -20px;
+        }
+
+        /* Animação  de troca de telas  */
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+       
+        .color-swatch { 
+            width: 24px; height: 24px; border-radius: 9999px; 
+            cursor: pointer; border: 2px solid transparent; 
+            transition: all 0.2s; 
+        } 
+      
+        .color-swatch:focus, .color-swatch:hover { 
+            transform: scale(1.15); 
+        } 
+      
+        .color-swatch.selected { 
+            border-color: #FFFFFF; 
+            box-shadow: 0 0 0 2px #333; 
+        }
+        
+      
+        #modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #add-note-modal {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #modal-overlay.hidden #add-note-modal {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+
+       
+        #event-modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #add-event-modal {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #event-modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #event-modal-overlay.hidden #add-event-modal {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+
+      
+        #filter-modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #filter-modal {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #filter-modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #filter-modal-overlay.hidden #filter-modal {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+    </style>
+</head>
+<body class="bg-white text-[#333333] overflow-x-hidden">
+
+    <div class="flex min-h-screen relative">
+
+        <div class="lg:hidden fixed top-0 w-full bg-white z-50 px-4 py-3 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="text-[#FB8500] text-2xl">
+                    <i class="ph ph-list"></i>
+                </button>
+                <span class="font-bold text-xl">Olá, Daniel!</span>
+            </div>
+            <img src="img/robozinho.png" alt="Avatar" class="w-10 h-10 rounded-full border border-gray-200 bg-gray-100 object-cover">
+        </div>
+
+        <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-screen w-24 lg:py-5 lg:pl-5 z-40 transition-transform transform -translate-x-full lg:translate-x-0 flex flex-col">
+            <div class="bg-[#FB8500] h-full w-full rounded-r-[30px] lg:rounded-[30px] flex flex-col items-center py-8 gap-8 shadow-lg lg:shadow-none">
+                
+                <div class="w-full pl-4">
+                    <div id="nav-dashboard" class="nav-item active h-14 flex items-center justify-center cursor-pointer" onclick="switchView('dashboard')">
+                        <i class="ph ph-house text-3xl"></i>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-8 w-full items-center">
+                    <div class="w-full pl-4">
+                         <div id="nav-calendar" class="nav-item h-14 flex items-center justify-center cursor-pointer" onclick="switchView('calendar')">
+                             <i class="ph ph-calendar-blank text-3xl"></i>
+                         </div>
+                    </div>
+
+                    <div class="w-full pl-4">
+                        <div id="nav-notes" class="nav-item h-14 flex items-center justify-center cursor-pointer" onclick="switchView('notes')">
+                            <i class="ph ph-notebook text-3xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-full pl-4">
+                        <div class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80">
+                            <i class="ph ph-cards text-3xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-full pl-4">
+                        <div class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80">
+                            <i class="ph ph-book-open-text text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden backdrop-blur-sm"></div>
+
+        <main class="flex-1 p-4 lg:p-8 pt-20 lg:pt-8 max-w-[1600px] mx-auto w-full flex flex-col h-screen overflow-y-auto">
+            
+            <header id="main-header" class="hidden lg:flex justify-between items-center mb-8 shrink-0 transition-all duration-300">
+                
+                <div id="main-search" class="relative w-96 transition-opacity duration-300">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="ph ph-magnifying-glass text-[#92140C] text-xl"></i>
+                    </div>
+                    <input type="text" 
+                           class="block w-full pl-12 pr-4 py-3 bg-[#F0F2F5] border-none rounded-2xl text-sm focus:ring-2 focus:ring-[#FB8500] focus:outline-none placeholder-[#7C838A]" 
+                           placeholder="Pesquisar">
+                </div>
+
+                <div id="user-controls" class="flex items-center gap-6 ml-auto">
+                    <button class="w-12 h-12 bg-[#F0F2F5] rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors relative">
+                        <i class="ph ph-bell text-[#09814A] text-xl"></i>
+                        <span class="absolute top-3 right-3 w-2 h-2 bg-[#92140C] rounded-full border border-white"></span>
+                    </button>
+
+                    <div class="relative">
+                        <div id="profile-btn" class="flex items-center gap-3 cursor-pointer select-none">
+                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+                                <img src="img/robozinho.png" alt="Daniel" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="font-semibold text-[#333333]">Daniel</span>
+                                <i id="profile-arrow" class="ph ph-caret-down text-[#333333] transition-transform duration-200"></i>
+                            </div>
+                        </div>
+
+                        <div id="profile-dropdown" class="hidden absolute top-full right-0 mt-2 w-[160px] bg-[#C8C4C4] rounded-lg shadow-xl p-3 z-50 flex flex-col gap-1 animate-fade-in">
+                            <button onclick="switchView('profile')" class="flex items-center gap-3 text-white/90 hover:bg-white/10 p-2 rounded-md transition-colors text-sm w-full text-left">
+                                <i class="ph ph-user text-lg"></i>
+                                <span>Editar Perfil</span>
+                            </button>
+                            <button class="flex items-center gap-3 text-white/90 hover:bg-white/10 p-2 rounded-md transition-colors text-sm w-full text-left">
+                                <i class="ph ph-question text-lg"></i>
+                                <span>Ajuda</span>
+                            </button>
+                            <div class="h-[1px] bg-white/20 my-1"></div>
+                            <button class="flex items-center gap-3 text-white/90 hover:bg-white/10 p-2 rounded-md transition-colors text-sm w-full text-left">
+                                <i class="ph ph-sign-out text-lg"></i>
+                                <span>Sair</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="view-dashboard" class="fade-in w-full flex-1">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                    <div class="lg:col-span-8 flex flex-col gap-6 lg:gap-8">
+                        <div class="relative bg-gradient-to-r from-[#FB8500] to-[#FF9E00] rounded-[40px] p-8 lg:p-12 text-white overflow-hidden shadow-lg min-h-[300px] lg:min-h-[370px] flex flex-col justify-center">
+                            <div class="absolute top-4 right-1/3 text-yellow-300 opacity-30 text-6xl"><i class="ph ph-lightning-fill"></i></div>
+                            <div class="absolute bottom-4 left-1/2 text-yellow-300 opacity-20 text-4xl"><i class="ph ph-lightning-fill"></i></div>
+                            <div class="relative z-10 max-w-[60%]">
+                                <h1 class="text-4xl lg:text-5xl font-bold mb-4">Olá, Daniel!</h1>
+                                <p class="text-lg lg:text-xl mb-6 opacity-90 font-medium">Hoje você tem:</p>
+                                <ul class="space-y-3 text-base lg:text-lg">
+                                    <li class="flex items-center gap-3"><div class="w-4 h-4 rounded-full border-2 border-white bg-transparent"></div><span>1 Atividade de História</span></li>
+                                    <li class="flex items-center gap-3"><div class="w-4 h-4 rounded-full border-2 border-white bg-transparent"></div><span>1 Atividade de Matemática</span></li>
+                                    <li class="flex items-center gap-3"><div class="w-4 h-4 rounded-full border-2 border-white bg-transparent"></div><span>1 Atividade de Física</span></li>
+                                </ul>
+                            </div>
+                            <img src="img/aceno.png" alt="Robô" class="absolute -bottom-5 right-[-20px] lg:right-0 w-48 lg:w-[550px] object-contain drop-shadow-2xl filter brightness-110">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-[30px] p-6 shadow-sm border border-gray-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-12 h-12 bg-[#09814A]/10 rounded-xl flex items-center justify-center text-[#09814A]"><i class="ph ph-function text-2xl"></i></div>
+                                    <button class="text-[#7C838A] hover:text-[#333333]"><i class="ph ph-dots-three-outline-fill text-xl"></i></button>
+                                </div>
+                                <div><h3 class="text-xl font-bold text-[#333333]">Matemática Básica</h3><p class="text-[#7C838A] text-sm mt-1">Flashcards de matemática básica</p></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-[#09814A] h-2.5 rounded-full" style="width: 65%"></div></div>
+                                <div class="flex justify-between items-center mt-1"><span class="text-xs font-bold text-[#09814A]">65% revisado</span><span class="bg-[#FB8500] text-white text-xs px-3 py-1 rounded-lg font-medium">matemática</span></div>
+                            </div>
+                            <div class="bg-white rounded-[30px] p-6 shadow-sm border border-gray-100 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-12 h-12 bg-[#09814A]/10 rounded-xl flex items-center justify-center text-[#09814A]"><i class="ph ph-atom text-2xl"></i></div>
+                                    <button class="text-[#FB8500] hover:text-[#e07600]"><i class="ph ph-star-fill text-xl"></i></button>
+                                 </div>
+                                <div><h3 class="text-xl font-bold text-[#333333]">Física Avançada</h3><p class="text-[#7C838A] text-sm mt-1">Flashcards de física avançada</p></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-[#09814A] h-2.5 rounded-full" style="width: 65%"></div></div>
+                                <div class="flex justify-between items-center mt-1"><span class="text-xs font-bold text-[#09814A]">65% mastered</span><span class="bg-[#FB8500] text-white text-xs px-3 py-1 rounded-lg font-medium">física</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 flex flex-col gap-6 lg:gap-8">
+                        <div class="flex flex-col gap-4">
+                            <h2 class="text-2xl font-normal text-[#333333]">Meus Lembretes</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-[#09814A] aspect-[4/3] rounded-[25px] shadow-sm cursor-pointer hover:scale-[1.02] transition-transform"></div>
+                                <div class="bg-[#FB8500] aspect-[4/3] rounded-[25px] shadow-sm cursor-pointer hover:scale-[1.02] transition-transform"></div>
+                                <div class="bg-[#FFD60A] aspect-[4/3] rounded-[25px] shadow-sm cursor-pointer hover:scale-[1.02] transition-transform"></div>
+                                <div class="bg-[#92140C] aspect-[4/3] rounded-[25px] shadow-sm cursor-pointer hover:scale-[1.02] transition-transform"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-[30px]">
+                            <h2 class="text-2xl font-normal text-[#333333] mb-4">Fóruns</h2>
+                            <div class="flex justify-between items-start gap-2 overflow-x-auto no-scrollbar pb-2">
+                                <div class="flex flex-col items-center gap-2 min-w-[70px]"><div class="w-16 h-16 rounded-full bg-[#F0F2F5]"></div><span class="text-xs text-center text-[#7C838A] font-medium">Matemática</span></div>
+                                <div class="flex flex-col items-center gap-2 min-w-[70px]"><div class="w-16 h-16 rounded-full bg-[#F0F2F5]"></div><span class="text-xs text-center text-[#7C838A] font-medium">Literatura</span></div>
+                                <div class="flex flex-col items-center gap-2 min-w-[70px]"><div class="w-16 h-16 rounded-full bg-[#F0F2F5]"></div><span class="text-xs text-center text-[#7C838A] font-medium">Física</span></div>
+                                <div class="flex flex-col items-center gap-2 min-w-[70px]"><div class="w-16 h-16 rounded-full bg-[#F0F2F5]"></div><span class="text-xs text-center text-[#7C838A] font-medium">História</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50/50 rounded-[30px] p-6 border border-gray-100">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-2xl font-normal text-[#333333]">Atividade</h2>
+                                <button class="bg-[#F0F2F5] px-3 py-1.5 rounded-lg text-sm text-[#333333] font-medium flex items-center gap-2"><i class="ph ph-calendar-blank text-[#FB8500]"></i> Mês</button>
+                            </div>
+                            <div class="relative h-48 w-full"><canvas id="activityChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-profile" class="hidden fade-in flex-col gap-8 w-full flex-1">
+                <div class="flex flex-col gap-6">
+                    <button onclick="switchView('dashboard')" class="w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500] hover:text-white transition-colors">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div class="flex items-center gap-6">
+                        <div class="relative">
+                            <div class="w-24 h-24 bg-[#E0E0E0] rounded-full flex items-center justify-center overflow-hidden"><i class="ph ph-user text-4xl text-gray-400"></i></div>
+                            <img src="img/robozinho.png" alt="Mascote" class="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full border-2 border-white shadow-md">
+                        </div>
+                        <h1 class="text-4xl text-[#09814A] font-normal">Olá, Daniel</h1>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-[#F9F9F9] rounded-[20px] p-8 shadow-sm">
+                        <h2 class="text-[#09814A] text-lg font-medium mb-6 uppercase tracking-wide">Informações do Usuário</h2>
+                        <div class="flex flex-col gap-5">
+                            <div><label class="block text-[#7C838A] text-sm mb-1">Nome Completo</label><input type="text" value="Daniel" class="w-full bg-transparent border-b border-gray-300 py-2 focus:border-[#FB8500] focus:outline-none"></div>
+                            <div><label class="block text-[#7C838A] text-sm mb-1">Data De Nascimento</label><input type="text" value="26/05/2006" class="w-full bg-transparent border-b border-gray-300 py-2 focus:border-[#FB8500] focus:outline-none"></div>
+                            <div><label class="block text-[#7C838A] text-sm mb-1">Telefone</label><input type="text" value="(11) 99999-9999" class="w-full bg-transparent border-b border-gray-300 py-2 focus:border-[#FB8500] focus:outline-none"></div>
+                            <div><label class="block text-[#7C838A] text-sm mb-1">Cargo</label><input type="text" value="Estudante" class="w-full bg-transparent border-b border-gray-300 py-2 focus:border-[#FB8500] focus:outline-none"></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 flex flex-col gap-8">
+                        <div class="bg-[#F9F9F9] rounded-[20px] p-8 shadow-sm h-fit">
+                            <h2 class="text-[#09814A] text-lg font-medium mb-6 uppercase tracking-wide">Preferências da Conta</h2>
+                            <a href="#" class="text-[#333333] hover:text-red-600 transition-colors text-sm font-medium">Excluir Conta</a>
+                        </div>
+                        <div class="flex gap-4 justify-end mt-auto">
+                            <button onclick="switchView('dashboard')" class="px-6 py-2.5 rounded-lg border border-[#FB8500] text-[#FB8500] font-medium hover:bg-[#FB8500]/10">CANCELAR</button>
+                            <button class="px-8 py-2.5 rounded-lg bg-[#FB8500] text-white font-medium shadow-md hover:bg-[#e07600]">SALVAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-notes" class="hidden fade-in w-full flex-1">
+                <div class="flex flex-col lg:flex-row gap-8 flex-1">
+                    
+                    <div class="flex-1 flex flex-col">
+                        
+                        <div class="mb-8">
+                            <h1 class="text-4xl text-[#09814A] font-bold mb-4">Minhas Notas</h1>
+                            <button id="open-modal-btn-1" class="bg-[#FFB703] text-white px-6 py-2 rounded-full font-medium shadow-sm flex items-center gap-2 hover:bg-[#e0a100] transition-colors">
+                                <span>Adicionar Nota</span>
+                                <i class="ph ph-plus-circle text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            
+                            <div class="flex flex-col gap-2 group cursor-pointer" onclick="switchView('noteDetail')">
+                                <div class="w-full aspect-[147/198] bg-[#D9D9D9] rounded-[20px] shadow-sm group-hover:shadow-md transition-all"></div>
+                                <span class="text-center text-[#333333] font-medium">Matemática</span>
+                            </div>
+
+                            <div class="flex flex-col gap-2 group cursor-pointer" onclick="switchView('noteDetail')">
+                                <div class="w-full aspect-[147/198] bg-[#D9D9D9] rounded-[20px] shadow-sm group-hover:shadow-md transition-all"></div>
+                                <span class="text-center text-[#333333] font-medium">Física</span>
+                            </div>
+
+                            <div class="flex flex-col gap-2 group cursor-pointer" onclick="switchView('noteDetail')">
+                                <div class="w-full aspect-[147/198] bg-[#D9D9D9] rounded-[20px] shadow-sm group-hover:shadow-md transition-all"></div>
+                                <span class="text-center text-[#333333] font-medium">Geografia</span>
+                            </div>
+
+                            <div id="open-modal-btn-2" class="flex flex-col gap-2 group cursor-pointer">
+                                <div class="w-full aspect-[147/198] border-2 border-dashed border-gray-300 rounded-[20px] flex items-center justify-center group-hover:border-[#FB8500] transition-colors">
+                                    <i class="ph ph-plus text-4xl text-gray-400 group-hover:text-[#FB8500]"></i>
+                                </div>
+                                <span class="text-center text-[#333333] font-medium">Nova Nota</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-80 bg-white rounded-[30px] shadow-lg p-6 h-fit border border-gray-50">
+                        <div class="relative mb-8">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ph ph-magnifying-glass text-[#92140C] text-lg"></i>
+                            </div>
+                            <input type="text" 
+                                   class="block w-full pl-10 pr-4 py-2.5 bg-[#F9F9F9] border-none rounded-xl text-sm focus:ring-1 focus:ring-[#FB8500] focus:outline-none placeholder-[#7C838A]" 
+                                   placeholder="Pesquisar">
+                        </div>
+                        <div class="flex flex-col gap-4 mb-6">
+                            <a href="#" class="flex items-center gap-3 text-[#333333] hover:bg-gray-50 p-2 rounded-lg transition-colors font-medium">
+                                <i class="ph ph-heart text-[#92140C] text-xl"></i>
+                                <span>Favoritos</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-3 text-[#333333] hover:bg-gray-50 p-2 rounded-lg transition-colors font-medium">
+                                <i class="ph ph-trash text-[#92140C] text-xl"></i>
+                                <span>Lixeira</span>
+                            </a>
+                        </div>
+                        <div class="h-[1px] bg-gray-200 w-full mb-6"></div>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-3 text-[#333333] p-2 font-medium">
+                                <i class="ph ph-folder text-[#92140C] text-xl"></i>
+                                <span>Pastas</span>
+                            </div>
+                            <div class="pl-4 flex flex-col gap-2 text-sm text-[#7C838A]">
+                                <a href="#" class="hover:text-[#FB8500]">· Projetos Pessoais</a>
+                                <a href="#" class="hover:text-[#FB8500]">· Faculdade</a>
+                                <a href="#" class="hover:text-[#FB8500]">· Ideias</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="view-note-detail" class="hidden fade-in w-full flex-1 flex flex-col">
+    
+                <div class="flex items-center gap-4 mb-6 shrink-0">
+                    <button onclick="switchView('notes')" class="text-[#FB8500] hover:text-[#e07600] transition-colors">
+                        <i class="ph ph-arrow-left text-5xl"></i> 
+                    </button>
+                    <h1 class="text-6xl text-[#09814A] font-bold">
+                        Matemática
+                    </h1>
+                </div>
+
+                <div class="flex items-center gap-6 mb-8 shrink-0">
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Favoritar">
+                        <i class="ph ph-heart text-3xl"></i>
+                    </button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Salvar">
+                        <i class="ph ph-floppy-disk text-3xl"></i>
+                    </button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Exportar">
+                        <i class="ph ph-upload-simple text-3xl"></i>
+                    </button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Excluir">
+                        <i class="ph ph-trash text-3xl"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 w-full h-full">
+                    <textarea 
+                        class="w-full h-full p-4 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-[#FB8500] focus:outline-none resize-none text-lg leading-relaxed" 
+                        placeholder="Comece a digitar sua nota aqui..."
+                    >Uma equação do 1º grau é uma igualdade que envolve uma incógnita (geralmente x) elevada à potência 1.</textarea>
+                </div>
+
+            </div>
+
+            <div id="view-calendar" class="hidden fade-in w-full flex flex-col gap-6 flex-1">
+            
+                <div class="flex justify-between items-center w-full">
+                    
+                    <button id="open-event-modal-btn" class="bg-[#FB8500] text-white text-sm font-medium rounded-lg shadow-md hover:bg-[#e07600] transition-colors flex items-center justify-center gap-2" style="width: 129px; height: 31px;">
+                        <span>Adicionar</span>
+                        <i class="ph ph-plus-circle text-lg"></i>
+                    </button>
+    
+                    <div class="relative">
+                        <button id="month-picker-btn" class="bg-[#FB8500] text-white font-bold rounded-lg shadow-md hover:bg-[#e07600] transition-colors flex items-center justify-center gap-2" style="width: 250px; height: 45px;">
+                            <i class="ph ph-calendar-blank text-xl"></i>
+                            <span>Setembro</span>
+                        </button>
+                        
+                        <div id="month-picker-popover" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 bg-white rounded-xl shadow-xl p-4 z-50 border border-gray-100" onclick="event.stopPropagation()">
+                            <div class="flex justify-between items-center mb-3">
+                                <button class="text-gray-400 hover:text-gray-700"><i class="ph ph-caret-left-bold"></i></button>
+                                <h3 class="font-semibold text-gray-700">Setembro de 2025</h3>
+                                <button class="text-gray-400 hover:text-gray-700"><i class="ph ph-caret-right-bold"></i></button>
+                            </div>
+                            <div class="grid grid-cols-7 text-center text-xs text-gray-400 mb-2">
+                                <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                            </div>
+                            <div class="grid grid-cols-7 text-center text-sm gap-y-1">
+                                <span class="text-gray-300"></span>
+                                <span class="text-gray-300"></span>
+                                <span class="text-gray-300"></span>
+                                <button class="hover:bg-gray-100 rounded-full">1</button>
+                                <button class="hover:bg-gray-100 rounded-full">2</button>
+                                <button class="hover:bg-gray-100 rounded-full">3</button>
+                                <button class="hover:bg-gray-100 rounded-full">4</button>
+                                
+                                <button class="hover:bg-gray-100 rounded-full">5</button>
+                                <button class="hover:bg-gray-100 rounded-full">6</button>
+                                <button class="hover:bg-gray-100 rounded-full">7</button>
+                                <button class="hover:bg-gray-100 rounded-full">8</button>
+                                <button class="hover:bg-gray-100 rounded-full">9</button>
+                                <button class="hover:bg-gray-100 rounded-full">10</button>
+                                <button class="hover:bg-gray-100 rounded-full">11</button>
+            
+                                <button class="hover:bg-gray-100 rounded-full">12</button>
+                                <button class="hover:bg-gray-100 rounded-full">13</button>
+                                <button class="hover:bg-gray-100 rounded-full">14</button>
+                                <button class="hover:bg-gray-100 rounded-full">15</button>
+                                <button class="hover:bg-gray-100 rounded-full">16</button>
+                                <button class="hover:bg-gray-100 rounded-full">17</button>
+                                <button class="hover:bg-gray-100 rounded-full">18</button>
+                                
+                                <button class="hover:bg-gray-100 rounded-full">19</button>
+                                <button class="hover:bg-gray-100 rounded-full">20</button>
+                                <button class="hover:bg-gray-100 rounded-full">21</button>
+                                <button class="hover:bg-gray-100 rounded-full">22</button>
+                                <button class="hover:bg-gray-100 rounded-full">23</button>
+                                <button class="hover:bg-gray-100 rounded-full">24</button>
+                                <button class="hover:bg-gray-100 rounded-full">25</button>
+                                
+                                <button class="hover:bg-gray-100 rounded-full">26</button>
+                                <button class="hover:bg-gray-100 rounded-full">27</button>
+                                <button class="hover:bg-gray-100 rounded-full">28</button>
+                                <button class="hover:bg-gray-100 rounded-full">29</button>
+                                <button class="hover:bg-gray-100 rounded-full">30</button>
+                                <span class="text-gray-300"></span>
+                                <span class="text-gray-300"></span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <button id="open-filter-modal-btn" class="bg-[#92140C] text-white text-sm font-medium rounded-lg shadow-md hover:bg-[#7a110a] transition-colors flex items-center justify-center gap-2" style="width: 129px; height: 31px;">
+                        <span>Filtrar</span>
+                        <i class="ph ph-funnel text-lg"></i>
+                    </button>
+                </div>
+    
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-1 flex flex-col">
+                    <div class="grid grid-cols-7">
+                        <div class="text-center font-bold p-3 text-white bg-[#FFB703] rounded-tl-2xl">Domingo</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#09814A]">Segunda</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#09814A]">Terça</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#09814A]">Quarta</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#09814A]">Quinta</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#09814A]">Sexta</div>
+                        <div class="text-center font-bold p-3 text-white bg-[#FFB703] rounded-tr-2xl">Sábado</div>
+                    </div>
+    
+                    <div class="grid grid-cols-7 grid-rows-5 flex-1">
+                        
+                        <div class="border-t border-r border-gray-100 p-2 text-gray-400">31</div> <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">1</span>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">2</span>
+                            <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">3</span>
+                            <div class="text-xs text-white bg-[#6A00F4] rounded p-1 truncate" title="Revisão">Revisão</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">4</span>
+                             <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">5</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">6</span>
+                        </div>
+    
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">7</span>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">8</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">9</span>
+                            <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">10</span>
+                             <div class="text-xs text-white bg-[#6A00F4] rounded p-1 truncate" title="Revisão">Revisão</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">11</span>
+                             <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">12</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">13</span>
+                        </div>
+    
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">14</span>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">15</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">16</span>
+                            <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">17</span>
+                             <div class="text-xs text-white bg-[#6A00F4] rounded p-1 truncate" title="Revisão">Revisão</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">18</span>
+                             <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">19</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">20</span>
+                        </div>
+    
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">21</span>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">22</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">23</span>
+                            <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">24</span>
+                             <div class="text-xs text-white bg-[#6A00F4] rounded p-1 truncate" title="Revisão">Revisão</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">25</span>
+                             <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">26</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-gray-100 p-2 relative">
+                            <span class="font-semibold text-gray-800">27</span>
+                            <div class="absolute bottom-2 right-2 flex flex-col items-center">
+                                <img src="img/robo bolo.png" alt="Robô com bolo" class="w-16 h-16 object-contain">
+                                <span class="text-xs font-bold text-white bg-[#FB8500] px-2 py-0.5 rounded-md -mt-2">30 Dias</span>
+                            </div>
+                        </div>
+    
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">28</span>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">29</span>
+                            <div class="text-xs text-white bg-[#00A896] rounded p-1 truncate" title="Simulado">Simulado</div>
+                            <div class="text-xs text-white bg-[#92140C] rounded p-1 truncate" title="FlashCard">FlashCard</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 space-y-1">
+                            <span class="font-semibold text-gray-800">30</span>
+                            <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
+                        </div>
+                        <div class="border-t border-r border-gray-100 p-2 text-gray-400">1</div> <div class="border-t border-r border-gray-100 p-2 text-gray-400">2</div> <div class="border-t border-r border-gray-100 p-2 text-gray-400">3</div> <div class="border-t border-gray-100 p-2 text-gray-400">4</div> </div>
+                </div>
+            </div>
+
+            </main>
+    </div>
+
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div id="add-note-modal" class="bg-white w-full max-w-[599px] h-auto rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 mb-6">
+                <button id="close-modal-btn" class="text-gray-500 hover:text-black transition-colors">
+                    <i class="ph ph-arrow-left text-2xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#FB8500]">Cadastrar nova nota</h2>
+            </div>
+            <form class="space-y-5" onsubmit="event.preventDefault(); closeModal();">
+                <div>
+                    <label for="note-name" class="block text-sm font-medium text-gray-700 mb-1">Nome da nota</label>
+                    <input type="text" id="note-name" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Resumo de Física">
+                </div>
+                <div>
+                    <label for="note-desc" class="block text-sm font-medium text-gray-700 mb-1">Descrição da nota</label>
+                    <input type="text" id="note-desc" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Fórmulas de MRU e MRUV">
+                </div>
+                <div>
+                    <label for="note-type" class="block text-sm font-medium text-gray-700 mb-1">Tipo da nota</label>
+                    <div class="relative">
+                        <select id="note-type" class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] appearance-none bg-white">
+                            <option>Selecione um tipo</option>
+                            <option>Matemática</option>
+                            <option>Física</option>
+                            <option>Ideias</option>
+                            <option>Pasta: Faculdade</option>
+                        </select>
+                        <i class="ph ph-caret-down text-[#09814A] text-xl absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor:</label>
+                    <div class="flex flex-wrap gap-3" id="color-palette">
+                        <button type="button" class="color-swatch" style="background-color: #3A506B;" data-color="#3A506B"></button>
+                        <button type="button" class="color-swatch" style="background-color: #1C7258;" data-color="#1C7258"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F2B705;" data-color="#F2B705"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F28C0F;" data-color="#F28C0F"></button>
+                        <button type="button" class="color-swatch" style="background-color: #D93E30;" data-color="#D93E30"></button>
+                        <button type="button" class="color-swatch" style="background-color: #A83E9B;" data-color="#A83E9B"></button>
+                        <button type="button" class="color-swatch" style="background-color: #5E3188;" data-color="#5E3188"></button>
+                        <button type="button" class="color-swatch" style="background-color: #57A6A5;" data-color="#57A6A5"></button>
+                        <button type="button" class="color-swatch" style="background-color: #89D96F;" data-color="#89D96F"></button>
+                        <button type="button" class="color-swatch" style="background-color: #C7F205;" data-color="#C7F205"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F2B279;" data-color="#F2B279"></button>
+                        <button type="button" class="color-swatch" style="background-color: #D973AB;" data-color="#D973AB"></button>
+                        <button type="button" class="color-swatch" style="background-color: #B49FCC;" data-color="#B49FCC"></button>
+                    </div>
+                </div>
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-[#09814A] text-white font-medium px-12 py-2.5 rounded-lg hover:bg-green-800 transition-colors">
+                        Criar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="event-modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div id="add-event-modal" class="bg-white w-full max-w-[599px] h-auto rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 mb-6">
+                <button id="close-event-modal-btn" class="w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#FB8500]">Cadastrar novo evento</h2>
+            </div>
+
+            <form class="space-y-5" onsubmit="event.preventDefault(); closeEventModal();">
+                
+                <div class="bg-gray-100 text-gray-600 text-sm font-medium px-4 py-2 rounded-lg w-fit">
+                    14. set 2025
+                </div>
+
+                <div>
+                    <label for="event-name" class="block text-sm font-medium text-gray-700 mb-1">Nome do Evento</label>
+                    <input type="text" id="event-name" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Simulado de Física">
+                </div>
+                <div>
+                    <label for="event-desc" class="block text-sm font-medium text-gray-700 mb-1">Descrição do Evento</label>
+                    <input type="text" id="event-desc" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Capítulos 1 a 5">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Esse evento possui recorrência?</label>
+                    <div class="flex items-center gap-6 mb-3">
+                        <label for="recur-yes" class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" id="recur-yes" name="recurrence" class="w-4 h-4 text-[#FB8500] focus:ring-[#FB8500] border-gray-300" checked>
+                            <span>Sim</span>
+                        </label>
+                        <label for="recur-no" class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" id="recur-no" name="recurrence" class="w-4 h-4 text-[#FB8500] focus:ring-[#FB8500] border-gray-300">
+                            <span>Não</span>
+                        </label>
+                    </div>
+                    <div class="relative">
+                        <select id="recurrence-type" class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] appearance-none bg-white">
+                            <option>Todos os dias</option>
+                            <option>Semanal: cada Domingo</option>
+                            <option>Mensal no(a) segundo(a) Domingo</option>
+                            <option>Anual: 14. set 2026</option>
+                        </select>
+                        <i class="ph ph-caret-down text-[#09814A] text-xl absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor:</label>
+                    <div class="flex flex-wrap gap-3" id="event-color-palette">
+                        <button type="button" class="color-swatch" style="background-color: #3A506B;" data-color="#3A506B"></button>
+                        <button type="button" class="color-swatch" style="background-color: #1C7258;" data-color="#1C7258"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F2B705;" data-color="#F2B705"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F28C0F;" data-color="#F28C0F"></button>
+                        <button type="button" class="color-swatch" style="background-color: #D93E30;" data-color="#D93E30"></button>
+                        <button type="button" class="color-swatch" style="background-color: #A83E9B;" data-color="#A83E9B"></button>
+                        <button type="button" class="color-swatch" style="background-color: #5E3188;" data-color="#5E3188"></button>
+                        <button type="button" class="color-swatch" style="background-color: #57A6A5;" data-color="#57A6A5"></button>
+                        <button type="button" class="color-swatch" style="background-color: #89D96F;" data-color="#89D96F"></button>
+                        <button type="button" class="color-swatch" style="background-color: #C7F205;" data-color="#C7F205"></button>
+                        <button type="button" class="color-swatch" style="background-color: #F2B279;" data-color="#F2B279"></button>
+                        <button type="button" class="color-swatch" style="background-color: #D973AB;" data-color="#D973AB"></button>
+                        <button type="button" class="color-swatch" style="background-color: #B49FCC;" data-color="#B49FCC"></button>
+                        <button type="button" class="color-swatch" style="background-color: #8C4A2F;" data-color="#8C4A2F"></button> </div>
+                </div>
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-[#09814A] text-white font-medium px-12 py-2.5 rounded-lg hover:bg-green-800 transition-colors">
+                        Criar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="filter-modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div id="filter-modal" class="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 mb-6">
+                <button id="close-filter-modal-btn" class="w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#333333]">Filtrar</h2>
+            </div>
+
+            <div class="flex">
+                <div class="flex-1 space-y-4">
+                    <p class="text-sm text-gray-600 mb-4">Selecione quais eventos você deseja exibir:</p>
+                    
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-[#023E8A] focus:ring-[#023E8A]" style="color: #023E8A;" checked>
+                        <span class="font-medium" style="color: #023E8A;">Enem</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-[#92140C] focus:ring-[#92140C]" style="color: #92140C;" checked>
+                        <span class="font-medium" style="color: #92140C;">FlashCard</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-[#6A00F4] focus:ring-[#6A00F4]" style="color: #6A00F4;" checked>
+                        <span class="font-medium" style="color: #6A00F4;">Revisão</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-[#00A896] focus:ring-[#00A896]" style="color: #00A896;" checked>
+                        <span class="font-medium" style="color: #00A896;">Simulado</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-pink-500 focus:ring-pink-500" style="color: #ec4899;">
+                        <span class="font-medium" style="color: #ec4899;">Resumo</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-orange-500 focus:ring-orange-500" style="color: #f97316;">
+                        <span class="font-medium" style="color: #f97316;">Prova</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600" style="color: #dc2626;">
+                        <span class="font-medium" style="color: #dc2626;">Fuvest</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500" style="color: #3b82f6;">
+                        <span class="font-medium" style="color: #3b82f6;">Curso</span>
+                    </label>
+
+                </div>
+                <div class="w-24 flex-shrink-0 flex items-end justify-center">
+                    <img src="img/robo aponta.png" alt="Mascote" class="w-24 h-24 object-contain">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        
+        
+        const views = {
+            dashboard: document.getElementById('view-dashboard'),
+            profile: document.getElementById('view-profile'),
+            notes: document.getElementById('view-notes'),
+            noteDetail: document.getElementById('view-note-detail'),
+            calendar: document.getElementById('view-calendar') 
+        };
+        
+        const navItems = {
+            dashboard: document.getElementById('nav-dashboard'),
+            calendar: document.getElementById('nav-calendar'), 
+            notes: document.getElementById('nav-notes')
+        };
+
+        const mainSearch = document.getElementById('main-search');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const profileArrow = document.getElementById('profile-arrow');
+        
+        
+        const monthPickerBtn = document.getElementById('month-picker-btn');
+        const monthPickerPopover = document.getElementById('month-picker-popover');
+
+
+        function switchView(viewName) {
+            
+            Object.values(views).forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex'); 
+            });
+
+            
+            const selectedView = views[viewName];
+            if (!selectedView) {
+                console.error("View not found:", viewName);
+                return;
+            }
+            selectedView.classList.remove('hidden');
+            
+            
+            if (viewName === 'profile' || viewName === 'noteDetail' || viewName === 'calendar' || viewName === 'dashboard' || viewName === 'notes') { 
+                selectedView.classList.add('flex');
+            }
+
+           
+            Object.values(navItems).forEach(el => {
+                if(el) el.classList.remove('active');
+            });
+
+            if (viewName === 'notes' || viewName === 'noteDetail') { 
+                if(navItems['notes']) navItems['notes'].classList.add('active');
+            } else if (navItems[viewName]) {
+                 navItems[viewName].classList.add('active');
+            }
+
+            
+            if (viewName === 'notes' || viewName === 'noteDetail') {
+                mainSearch.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                mainSearch.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            
+            profileDropdown.classList.add('hidden');
+            if(profileArrow) profileArrow.classList.remove('rotate-180');
+            if(monthPickerPopover) monthPickerPopover.classList.add('hidden'); // [NOVO]
+        }
+
+       
+        const profileBtn = document.getElementById('profile-btn');
+        
+        if (profileBtn) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = profileDropdown.classList.contains('hidden');
+                if (isHidden) {
+                    profileDropdown.classList.remove('hidden');
+                    if(profileArrow) profileArrow.classList.add('rotate-180');
+                } else {
+                    profileDropdown.classList.add('hidden');
+                    if(profileArrow) profileArrow.classList.remove('rotate-180');
+                }
+            });
+        }
+        
+        
+        if (monthPickerBtn) {
+            monthPickerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                monthPickerPopover.classList.toggle('hidden');
+            });
+        }
+
+        
+        window.addEventListener('click', (e) => {
+            
+            if (profileBtn && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.add('hidden');
+                if(profileArrow) profileArrow.classList.remove('rotate-180');
+            }
+            
+            
+            if (monthPickerBtn && monthPickerPopover && !monthPickerBtn.contains(e.target) && !monthPickerPopover.contains(e.target)) {
+                monthPickerPopover.classList.add('hidden');
+            }
+        });
+
+
+
+        const btn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        if (btn) btn.addEventListener('click', toggleMenu);
+        if (overlay) overlay.addEventListener('click', toggleMenu);
+
+       
+        const ctx = document.getElementById('activityChart');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        {
+                            label: 'Atividade Atual',
+                            data: [8000, 12000, 10000, 22000, 20000, 18000, 25000],
+                            borderColor: '#333333',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        },
+                        {
+                            label: 'Média Anterior',
+                            data: [5000, 15000, 18000, 7000, 15000, 28000, 20000],
+                            borderColor: '#B0B0B0',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 30000, ticks: { callback: v => v/1000 + 'K', color: '#9CA3AF', font: { size: 10 } }, grid: { display: false }, border: { display: false } },
+                        x: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 10 } }, border: { display: false } }
+                    }
+                }
+            });
+        }
+        
+       
+        
+        const modalOverlay = document.getElementById('modal-overlay');
+        const openModalBtn1 = document.getElementById('open-modal-btn-1');
+        const openModalBtn2 = document.getElementById('open-modal-btn-2');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const colorPalette = document.getElementById('color-palette');
+
+        function openModal() {
+            if (modalOverlay) modalOverlay.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            if (modalOverlay) modalOverlay.classList.add('hidden');
+        }
+
+        if (openModalBtn1) openModalBtn1.addEventListener('click', openModal);
+        if (openModalBtn2) openModalBtn2.addEventListener('click', openModal);
+        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+        
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (colorPalette) {
+            colorPalette.addEventListener('click', (e) => {
+                if (e.target.classList.contains('color-swatch')) {
+                    colorPalette.querySelectorAll('.color-swatch').forEach(swatch => {
+                        swatch.classList.remove('selected');
+                    });
+                    e.target.classList.add('selected');
+                }
+            });
+        }
+
+        
+
+        const eventModalOverlay = document.getElementById('event-modal-overlay');
+        const openEventModalBtn = document.getElementById('open-event-modal-btn');
+        const closeEventModalBtn = document.getElementById('close-event-modal-btn');
+        const eventColorPalette = document.getElementById('event-color-palette');
+
+        function openEventModal() {
+            if (eventModalOverlay) eventModalOverlay.classList.remove('hidden');
+        }
+
+        function closeEventModal() {
+            if (eventModalOverlay) eventModalOverlay.classList.add('hidden');
+        }
+
+        if (openEventModalBtn) openEventModalBtn.addEventListener('click', openEventModal);
+        if (closeEventModalBtn) closeEventModalBtn.addEventListener('click', closeEventModal);
+        
+        if (eventModalOverlay) {
+            eventModalOverlay.addEventListener('click', (e) => {
+                if (e.target === eventModalOverlay) {
+                    closeEventModal();
+                }
+            });
+        }
+
+        if (eventColorPalette) {
+            eventColorPalette.addEventListener('click', (e) => {
+                if (e.target.classList.contains('color-swatch')) {
+                    eventColorPalette.querySelectorAll('.color-swatch').forEach(swatch => {
+                        swatch.classList.remove('selected');
+                    });
+                    e.target.classList.add('selected');
+                }
+            });
+        }
+
+       
+
+        const filterModalOverlay = document.getElementById('filter-modal-overlay');
+        const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
+        const closeFilterModalBtn = document.getElementById('close-filter-modal-btn');
+
+        function openFilterModal() {
+            if (filterModalOverlay) filterModalOverlay.classList.remove('hidden');
+        }
+
+        function closeFilterModal() {
+            if (filterModalOverlay) filterModalOverlay.classList.add('hidden');
+        }
+
+        if (openFilterModalBtn) openFilterModalBtn.addEventListener('click', openFilterModal);
+        if (closeFilterModalBtn) closeFilterModalBtn.addEventListener('click', closeFilterModal);
+        
+        if (filterModalOverlay) {
+            filterModalOverlay.addEventListener('click', (e) => {
+                if (e.target === filterModalOverlay) {
+                    closeFilterModal();
+                }
+            });
+        }
+        
+    </script>
+</body>
+</html>

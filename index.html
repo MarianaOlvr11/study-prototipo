@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -19,7 +18,6 @@
             background-color: #FFFFFF;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -34,25 +32,24 @@
             background: #aaa; 
         }
 
-        /* Sidebar Active State */
+
         .nav-item {
             position: relative;
             transition: all 0.3s;
-            color: white; /* Default text color */
+            color: white; 
         }
         
-        /* Estado Ativo  */
+        
         .nav-item.active {
             background-color: white;
-            color: #09814A; /* Active icon color */
+            color: #09814A; 
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            /* Extensão para a direita para cobrir a margem */
             width: calc(100% + 20px); 
             margin-right: -20px;
         }
 
-        /* Animação  de troca de telas  */
+        
         .fade-in {
             animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -62,7 +59,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -71,7 +67,6 @@
             scrollbar-width: none;
         }
         
-       
         .color-swatch { 
             width: 24px; height: 24px; border-radius: 9999px; 
             cursor: pointer; border: 2px solid transparent; 
@@ -87,7 +82,7 @@
             box-shadow: 0 0 0 2px #333; 
         }
         
-      
+        
         #modal-overlay {
             transition: opacity 0.3s ease-in-out;
         }
@@ -134,6 +129,10 @@
             opacity: 0;
             transform: scale(0.95) translateY(10px);
         }
+        
+        .deck-btn.active {
+            background-color: #E5E5E5;
+        }
     </style>
 </head>
 <body class="bg-white text-[#333333] overflow-x-hidden">
@@ -173,13 +172,13 @@
                     </div>
 
                     <div class="w-full pl-4">
-                        <div class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80">
+                        <div id="nav-decks" class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80" onclick="switchView('decks')">
                             <i class="ph ph-cards text-3xl"></i>
                         </div>
                     </div>
 
                     <div class="w-full pl-4">
-                        <div class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80">
+                        <div id="nav-plans" class="nav-item h-14 flex items-center justify-center cursor-pointer hover:text-white/80" onclick="switchView('plans')">
                             <i class="ph ph-book-open-text text-3xl"></i>
                         </div>
                     </div>
@@ -189,10 +188,9 @@
 
         <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden backdrop-blur-sm"></div>
 
-        <main class="flex-1 p-4 lg:p-8 pt-20 lg:pt-8 max-w-[1600px] mx-auto w-full flex flex-col h-screen overflow-y-auto">
+        <main class="flex-1 p-4 lg:p-8 pt-20 lg:pt-8 max-w-[1600px] mx-auto w-full flex flex-col h-screen overflow-y-auto relative">
             
             <header id="main-header" class="hidden lg:flex justify-between items-center mb-8 shrink-0 transition-all duration-300">
-                
                 <div id="main-search" class="relative w-96 transition-opacity duration-300">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="ph ph-magnifying-glass text-[#92140C] text-xl"></i>
@@ -419,7 +417,6 @@
             </div>
             
             <div id="view-note-detail" class="hidden fade-in w-full flex-1 flex flex-col">
-    
                 <div class="flex items-center gap-4 mb-6 shrink-0">
                     <button onclick="switchView('notes')" class="text-[#FB8500] hover:text-[#e07600] transition-colors">
                         <i class="ph ph-arrow-left text-5xl"></i> 
@@ -430,18 +427,10 @@
                 </div>
 
                 <div class="flex items-center gap-6 mb-8 shrink-0">
-                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Favoritar">
-                        <i class="ph ph-heart text-3xl"></i>
-                    </button>
-                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Salvar">
-                        <i class="ph ph-floppy-disk text-3xl"></i>
-                    </button>
-                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Exportar">
-                        <i class="ph ph-upload-simple text-3xl"></i>
-                    </button>
-                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Excluir">
-                        <i class="ph ph-trash text-3xl"></i>
-                    </button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Favoritar"><i class="ph ph-heart text-3xl"></i></button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Salvar"><i class="ph ph-floppy-disk text-3xl"></i></button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Exportar"><i class="ph ph-upload-simple text-3xl"></i></button>
+                    <button class="text-[#92140C] hover:text-red-700 transition-colors" title="Excluir"><i class="ph ph-trash text-3xl"></i></button>
                 </div>
 
                 <div class="flex-1 w-full h-full">
@@ -450,7 +439,6 @@
                         placeholder="Comece a digitar sua nota aqui..."
                     >Uma equação do 1º grau é uma igualdade que envolve uma incógnita (geralmente x) elevada à potência 1.</textarea>
                 </div>
-
             </div>
 
             <div id="view-calendar" class="hidden fade-in w-full flex flex-col gap-6 flex-1">
@@ -672,70 +660,11 @@
                             <div class="text-xs text-white bg-[#023E8A] rounded p-1 truncate" title="ENEM">ENEM</div>
                         </div>
                         <div class="border-t border-r border-gray-100 p-2 text-gray-400">1</div> <div class="border-t border-r border-gray-100 p-2 text-gray-400">2</div> <div class="border-t border-r border-gray-100 p-2 text-gray-400">3</div> <div class="border-t border-gray-100 p-2 text-gray-400">4</div> </div>
+
                 </div>
             </div>
 
-            </main>
-    </div>
-
-    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div id="add-note-modal" class="bg-white w-full max-w-[599px] h-auto rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
-            <div class="flex items-center gap-4 mb-6">
-                <button id="close-modal-btn" class="text-gray-500 hover:text-black transition-colors">
-                    <i class="ph ph-arrow-left text-2xl"></i>
-                </button>
-                <h2 class="text-2xl font-bold text-[#FB8500]">Cadastrar nova nota</h2>
-            </div>
-            <form class="space-y-5" onsubmit="event.preventDefault(); closeModal();">
-                <div>
-                    <label for="note-name" class="block text-sm font-medium text-gray-700 mb-1">Nome da nota</label>
-                    <input type="text" id="note-name" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Resumo de Física">
-                </div>
-                <div>
-                    <label for="note-desc" class="block text-sm font-medium text-gray-700 mb-1">Descrição da nota</label>
-                    <input type="text" id="note-desc" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Fórmulas de MRU e MRUV">
-                </div>
-                <div>
-                    <label for="note-type" class="block text-sm font-medium text-gray-700 mb-1">Tipo da nota</label>
-                    <div class="relative">
-                        <select id="note-type" class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] appearance-none bg-white">
-                            <option>Selecione um tipo</option>
-                            <option>Matemática</option>
-                            <option>Física</option>
-                            <option>Ideias</option>
-                            <option>Pasta: Faculdade</option>
-                        </select>
-                        <i class="ph ph-caret-down text-[#09814A] text-xl absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none"></i>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor:</label>
-                    <div class="flex flex-wrap gap-3" id="color-palette">
-                        <button type="button" class="color-swatch" style="background-color: #3A506B;" data-color="#3A506B"></button>
-                        <button type="button" class="color-swatch" style="background-color: #1C7258;" data-color="#1C7258"></button>
-                        <button type="button" class="color-swatch" style="background-color: #F2B705;" data-color="#F2B705"></button>
-                        <button type="button" class="color-swatch" style="background-color: #F28C0F;" data-color="#F28C0F"></button>
-                        <button type="button" class="color-swatch" style="background-color: #D93E30;" data-color="#D93E30"></button>
-                        <button type="button" class="color-swatch" style="background-color: #A83E9B;" data-color="#A83E9B"></button>
-                        <button type="button" class="color-swatch" style="background-color: #5E3188;" data-color="#5E3188"></button>
-                        <button type="button" class="color-swatch" style="background-color: #57A6A5;" data-color="#57A6A5"></button>
-                        <button type="button" class="color-swatch" style="background-color: #89D96F;" data-color="#89D96F"></button>
-                        <button type="button" class="color-swatch" style="background-color: #C7F205;" data-color="#C7F205"></button>
-                        <button type="button" class="color-swatch" style="background-color: #F2B279;" data-color="#F2B279"></button>
-                        <button type="button" class="color-swatch" style="background-color: #D973AB;" data-color="#D973AB"></button>
-                        <button type="button" class="color-swatch" style="background-color: #B49FCC;" data-color="#B49FCC"></button>
-                    </div>
-                </div>
-                <div class="flex justify-center pt-4">
-                    <button type="submit" class="bg-[#09814A] text-white font-medium px-12 py-2.5 rounded-lg hover:bg-green-800 transition-colors">
-                        Criar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="event-modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div id="event-modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="add-event-modal" class="bg-white w-full max-w-[599px] h-auto rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
             <div class="flex items-center gap-4 mb-6">
                 <button id="close-event-modal-btn" class="w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
@@ -805,9 +734,450 @@
                         Criar
                     </button>
                 </div>
-            </form>
+            </form> 
+        
         </div>
     </div>
+
+            <div id="view-decks" class="hidden fade-in w-full flex-1 flex-col lg:flex-row gap-8 relative">
+                
+                <div class="flex-1 flex flex-col w-full relative">
+                    
+                    <div id="deck-tab-meus" class="flex flex-col w-full">
+                        <h1 class="text-4xl text-[#09814A] font-bold mb-6">Meus Decks</h1>
+                        <div class="relative w-full max-w-lg mb-8">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ph ph-magnifying-glass text-[#FB8500] text-lg"></i>
+                            </div>
+                            <input type="text" class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-[#09814A] focus:outline-none placeholder-gray-400 bg-transparent" placeholder="Pesquisar meus Decks">
+                        </div>
+                        
+                        <div class="flex flex-col gap-4">
+                            <div class="bg-[#F0F2F5] rounded-xl p-5 flex justify-between items-center cursor-pointer hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm" onclick="switchDeckTab('detail')">
+                                <div class="pr-4">
+                                    <h3 class="text-lg font-bold text-[#333333]">Geografia - Conhecimentos gerais</h3>
+                                    <p class="text-sm text-[#7C838A] mt-1">Revise os principais temas da geografia de forma rápida e prática!</p>
+                                </div>
+                                <div class="flex flex-col items-end gap-2 min-w-[120px]">
+                                    <div class="flex items-center gap-2">
+                                        <img src="img/robo com cacto.png" alt="Autor" class="w-6 h-6 rounded-full bg-white border border-gray-300">
+                                        <span class="text-sm text-[#333333] font-medium">Daniel</span>
+                                    </div>
+                                    <span class="text-xs text-[#92140C] font-bold tracking-wide">12 FlashCards</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-[#F0F2F5] rounded-xl p-5 flex justify-between items-center cursor-pointer hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm" onclick="switchDeckTab('detail')">
+                                <div class="pr-4">
+                                    <h3 class="text-lg font-bold text-[#333333]">Biologia - Genética Simplificada</h3>
+                                    <p class="text-sm text-[#7C838A] mt-1">Domine conceitos de DNA, hereditariedade e cruzamentos.</p>
+                                </div>
+                                <div class="flex flex-col items-end gap-2 min-w-[120px]">
+                                    <div class="flex items-center gap-2">
+                                        <img src="img/robozinho.png" alt="Autor" class="w-6 h-6 rounded-full bg-white border border-gray-300">
+                                        <span class="text-sm text-[#333333] font-medium">Daniel</span>
+                                    </div>
+                                    <span class="text-xs text-[#92140C] font-bold tracking-wide">65 FlashCards</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="deck-tab-buscar" class="hidden flex-col w-full">
+                        <h1 class="text-4xl text-[#09814A] font-bold mb-6">Buscar Decks</h1>
+                        <div class="relative w-full max-w-lg mb-8">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ph ph-magnifying-glass text-[#FB8500] text-lg"></i>
+                            </div>
+                            <input type="text" class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-[#09814A] focus:outline-none placeholder-gray-400 bg-transparent" placeholder="Pesquisar Decks">
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <div class="bg-[#F0F2F5] rounded-xl p-5 flex justify-between items-center cursor-pointer hover:bg-gray-200 transition-colors border border-gray-100 shadow-sm" onclick="switchDeckTab('detail-public')">
+                                <div class="pr-4">
+                                    <h3 class="text-lg font-bold text-[#333333]">História - Linha do Tempo Mundial</h3>
+                                    <p class="text-sm text-[#7C838A] mt-1">Revise os principais períodos e eventos históricos do mundo.</p>
+                                </div>
+                                <div class="flex flex-col items-end gap-2 min-w-[120px]">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-full bg-[#09814A] flex items-center justify-center text-white text-xs"><i class="ph ph-user"></i></div>
+                                        <span class="text-sm text-[#333333] font-medium">Soraya</span>
+                                    </div>
+                                    <span class="text-xs text-[#92140C] font-bold tracking-wide">12 FlashCards</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="deck-tab-detail" class="hidden flex-col w-full">
+                        <div class="flex items-center gap-4 mb-6 shrink-0">
+                            <button onclick="switchDeckTab('meus')" class="text-[#FB8500] hover:text-[#e07600] transition-colors">
+                                <i class="ph ph-arrow-left text-3xl"></i> 
+                            </button>
+                            <h1 class="text-4xl text-[#09814A] font-bold">Meus Decks</h1>
+                        </div>
+
+                        <div class="flex flex-col gap-4 mb-8">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Título</label>
+                                <div class="w-full border border-gray-300 rounded-lg p-3 bg-transparent font-bold text-[#333333]">Geografia - Conhecimentos gerais</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Descrição</label>
+                                <div class="w-full border border-gray-300 rounded-lg p-3 bg-transparent text-sm text-[#333333] min-h-[80px]">Revise os principais temas da geografia de forma rápida e prática!</div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-end mb-4">
+                            <h3 class="text-sm font-bold text-gray-500">FlashCards</h3>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+                            <div class="flex flex-col gap-2 items-center cursor-pointer group" onclick="switchDeckTab('study')">
+                                <div class="w-full aspect-[3/4] bg-[#EAEAEA] rounded-xl shadow-sm border border-transparent group-hover:border-[#09814A] transition-colors"></div>
+                                <span class="text-xs font-bold text-gray-500">Geografia 1</span>
+                            </div>
+                            <div class="flex flex-col gap-2 items-center cursor-pointer group" onclick="switchDeckTab('study')">
+                                <div class="w-full aspect-[3/4] bg-[#EAEAEA] rounded-xl shadow-sm border border-transparent group-hover:border-[#09814A] transition-colors"></div>
+                                <span class="text-xs font-bold text-gray-500">Geografia 2</span>
+                            </div>
+                            <div class="flex flex-col gap-2 items-center cursor-pointer group" onclick="switchDeckTab('study')">
+                                <div class="w-full aspect-[3/4] bg-[#EAEAEA] rounded-xl shadow-sm border border-transparent group-hover:border-[#09814A] transition-colors"></div>
+                                <span class="text-xs font-bold text-gray-500">Geografia 3</span>
+                            </div>
+                        </div>
+
+                        <button onclick="openModalById('modal-add-flashcard')" class="w-fit bg-[#09814A] text-white px-6 py-2.5 rounded-lg font-medium shadow-md flex items-center gap-2 hover:bg-green-800 transition-colors">
+                            <span>Adicionar FlashCard</span>
+                            <i class="ph ph-plus text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div id="deck-tab-detail-public" class="hidden flex-col w-full relative">
+                        <div class="flex items-center gap-4 mb-6 shrink-0">
+                            <button onclick="switchDeckTab('buscar')" class="text-[#FB8500] hover:text-[#e07600] transition-colors">
+                                <i class="ph ph-arrow-left text-3xl"></i> 
+                            </button>
+                            <h1 class="text-4xl text-[#09814A] font-bold">Buscar Decks</h1>
+                        </div>
+
+                        <div class="absolute top-0 right-0 flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"><i class="ph ph-user text-xl"></i></div>
+                            <span class="text-sm font-bold mt-1">Soraya</span>
+                            <span class="text-[10px] text-[#92140C] font-bold">CRIADOR</span>
+                        </div>
+
+                        <div class="flex flex-col gap-4 mb-8 w-11/12">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Título</label>
+                                <div class="w-full border border-gray-300 rounded-lg p-3 bg-transparent font-bold text-[#333333] flex justify-between">
+                                    <span>História - Linha do Tempo Mundial</span>
+                                    <i class="ph ph-prohibit text-red-700"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Descrição</label>
+                                <div class="w-full border border-gray-300 rounded-lg p-3 bg-transparent text-sm text-[#333333] min-h-[80px] flex justify-between">
+                                    <span>Revise os principais períodos e eventos históricos do mundo.</span>
+                                    <i class="ph ph-prohibit text-red-700"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-end mb-4">
+                            <h3 class="text-sm font-bold text-gray-500">FlashCards</h3>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-10">
+                            <div class="flex flex-col gap-2 items-center">
+                                <div class="w-full aspect-[3/4] bg-[#EAEAEA] rounded-xl shadow-sm border border-transparent"></div>
+                                <span class="text-xs font-bold text-gray-500">História 1</span>
+                            </div>
+                            <div class="flex flex-col gap-2 items-center">
+                                <div class="w-full aspect-[3/4] bg-[#EAEAEA] rounded-xl shadow-sm border border-transparent"></div>
+                                <span class="text-xs font-bold text-gray-500">História 2</span>
+                            </div>
+                        </div>
+
+                        <button onclick="showSuccessModal('DECK SALVO COM SUCESSO!', 'meus')" class="w-fit bg-[#09814A] text-white px-6 py-2.5 rounded-lg font-medium shadow-md flex items-center gap-2 hover:bg-green-800 transition-colors">
+                            <span>Salvar Deck</span>
+                            <i class="ph ph-plus text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div id="deck-tab-study" class="hidden flex-col items-center w-full max-w-2xl mx-auto pt-4 relative">
+                        <div class="flex items-center gap-4 text-[#09814A] w-full justify-center relative mb-8">
+                            <button onclick="switchDeckTab('detail')" class="absolute left-0 text-[#FB8500] hover:text-[#e07600] border-2 border-[#FB8500] rounded-full p-1"><i class="ph ph-arrow-left text-xl"></i></button>
+                            <h1 class="text-4xl font-bold uppercase tracking-wide">GEOGRAFIA</h1>
+                        </div>
+
+                        <div class="bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-full p-8 border-t-[6px] border-[#E8F5E9] relative">
+                            <div class="absolute -inset-2 bg-green-50 rounded-[30px] -z-10 blur-md"></div>
+                            
+                            <h2 class="text-xl font-bold text-[#111111] mb-1">Conhecimentos gerais</h2>
+                            <p class="text-gray-500 text-lg mb-4">Card 1 de 5</p>
+                            
+                            <div class="w-full bg-gray-200 h-2 rounded-full mb-8 overflow-hidden">
+                                <div class="bg-[#09814A] h-full rounded-full" style="width: 20%"></div>
+                            </div>
+
+                            <div id="flashcard-front" class="bg-[#F0F4FF] rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer hover:bg-[#e6ecff] transition-colors border border-blue-50" onclick="document.getElementById('flashcard-back').classList.remove('hidden'); this.classList.add('hidden')">
+                                <p class="text-2xl font-bold text-center text-[#111]">Qual é a capital do Brasil</p>
+                                <p class="text-sm text-gray-500 mt-4">Clique para ver a resposta</p>
+                            </div>
+
+                            <div id="flashcard-back" class="bg-[#F0F4FF] rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer border border-blue-50 hidden" onclick="document.getElementById('flashcard-front').classList.remove('hidden'); this.classList.add('hidden')">
+                                <p class="text-2xl font-bold text-center text-[#111]">Brasília</p>
+                                <p class="text-sm text-gray-500 mt-4">Clique para voltar à frente</p>
+                            </div>
+
+                            <div class="mt-8 text-center flex flex-col items-center">
+                                <p class="font-bold text-xl mb-1 text-[#111]">O quão bem você sabia disso?</p>
+                                <p class="text-gray-500 text-base mb-6">Sua resposta determina quando você vai ver esse card novamente</p>
+                                
+                                <div class="flex flex-wrap justify-center gap-4 w-full px-2">
+                                    <button class="flex-1 min-w-[100px] flex flex-col items-center justify-center py-2 bg-[#FFEAEB] text-[#D32F2F] rounded-lg border border-[#FFCDD2] hover:bg-[#FFCDD2] transition-colors">
+                                        <span class="font-bold text-sm">Denovo</span><span class="text-[10px]">&lt; 1 min</span>
+                                    </button>
+                                    <button class="flex-1 min-w-[100px] flex flex-col items-center justify-center py-2 bg-[#FFF3E0] text-[#E65100] rounded-lg border border-[#FFE0B2] hover:bg-[#FFE0B2] transition-colors">
+                                        <span class="font-bold text-sm">Difícil</span><span class="text-[10px]">6 min</span>
+                                    </button>
+                                    <button class="flex-1 min-w-[100px] flex flex-col items-center justify-center py-2 bg-[#E8F5E9] text-[#2E7D32] rounded-lg border border-[#C8E6C9] hover:bg-[#C8E6C9] transition-colors">
+                                        <span class="font-bold text-sm">Bom</span><span class="text-[10px]">1 day</span>
+                                    </button>
+                                    <button class="flex-1 min-w-[100px] flex flex-col items-center justify-center py-2 bg-[#E3F2FD] text-[#1565C0] rounded-lg border border-[#BBDEFB] hover:bg-[#BBDEFB] transition-colors">
+                                        <span class="font-bold text-sm">Fácil</span><span class="text-[10px]">4 days</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-center w-full">
+                            <button onclick="switchDeckTab('meus')" class="bg-[#09814A] text-white px-10 py-3 rounded-lg font-bold hover:bg-green-800 shadow-md">AVANÇAR</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="w-full lg:w-[220px] flex flex-col gap-3 shrink-0 mt-8 lg:mt-[72px]">
+                    <button onclick="openModalById('modal-criar-deck')" class="flex justify-between items-center bg-[#D9D9D9] text-[#333333] font-medium p-3 rounded-lg hover:bg-gray-300 transition-colors">
+                        <span>Criar Deck</span><i class="ph ph-plus"></i>
+                    </button>
+                    <button id="btn-tab-buscar" onclick="switchDeckTab('buscar')" class="deck-btn flex justify-between items-center bg-[#D9D9D9] text-[#333333] font-medium p-3 rounded-lg hover:bg-gray-300 transition-colors">
+                        <span>Buscar Decks</span><i class="ph ph-book-open"></i>
+                    </button>
+                    <button id="btn-tab-meus" onclick="switchDeckTab('meus')" class="deck-btn flex justify-between items-center bg-[#D9D9D9] text-[#333333] font-medium p-3 rounded-lg hover:bg-gray-300 transition-colors active">
+                        <span>Meus Decks</span><i class="ph ph-stack"></i>
+                    </button>
+
+                    <div class="mt-auto hidden lg:flex justify-end pr-4">
+                        <img src="img/robo com cacto.png" alt="Mascote" class="w-40 object-contain drop-shadow-md">
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="view-plans" class="hidden fade-in w-full flex-col relative pb-20 flex-1">
+                
+                <div class="bg-[#FB8500] rounded-[30px] p-6 lg:p-10 text-white relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between shadow-md mb-8">
+                    <div class="max-w-3xl z-10">
+                        <h1 class="text-2xl lg:text-[28px] leading-tight font-bold mb-4 uppercase tracking-wide">
+                            Aprenda Data Science, Análises Preditivas e Construção de Modelos de Machine Learn
+                        </h1>
+                        <p class="text-sm lg:text-base opacity-90 font-medium leading-relaxed">
+                            Domine Data Science! Realize projetos, construa modelos e análise dados. Essa é a formação ideal para que deseja ser profissional em ciência de dados!
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-6 mt-6 lg:mt-0 z-10 lg:pl-10 lg:border-l lg:border-white/20">
+                        <div class="relative w-[100px] h-[100px] flex items-center justify-center">
+                            <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" fill="transparent" class="text-white/20" />
+                                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="276" stroke-dashoffset="207" class="text-white drop-shadow-md" />
+                            </svg>
+                            <span class="font-bold text-2xl relative z-10">25%</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-2xl">1/4</p>
+                            <p class="text-sm opacity-90 font-medium">passos finalizados</p>
+                        </div>
+                    </div>
+                    
+                    <img src="img/robozinho.png" alt="Mascote" class="absolute right-4 bottom-0 w-32 opacity-20 lg:opacity-100 mix-blend-luminosity drop-shadow-2xl">
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-8 lg:gap-16 py-2 border-b border-gray-100 mb-8 px-4">
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-clock text-3xl text-gray-800"></i>
+                        <div>
+                            <p class="font-bold text-lg text-gray-800 leading-none">60h</p>
+                            <p class="text-sm text-gray-500">Para conclusão</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-seal-check text-3xl text-gray-800"></i>
+                        <div>
+                            <p class="font-bold text-lg text-gray-800 leading-none">4</p>
+                            <p class="text-sm text-gray-500">Cursos</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-play-circle text-3xl text-gray-800"></i>
+                        <div>
+                            <p class="font-bold text-lg text-gray-800 leading-none">3</p>
+                            <p class="text-sm text-gray-500">Módulos Extra</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
+                    
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div class="flex items-center gap-2 mb-6">
+                            <h2 class="text-[#FB8500] text-xl font-bold uppercase tracking-wide">Pré-requisitos</h2>
+                            <button class="w-6 h-6 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                                <i class="ph ph-caret-up text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100 flex items-start gap-4">
+                                <div class="bg-white border-2 border-gray-800 rounded-md w-10 h-8 flex items-center justify-center mt-1 shrink-0">
+                                    <i class="ph ph-terminal-window text-gray-800 text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-bold text-gray-800 mb-2 uppercase">Lógica de Programação</h3>
+                                    <div class="flex items-center gap-3 w-full">
+                                        <span class="text-sm font-bold text-gray-600 w-10">100%</span>
+                                        <div class="flex-1 bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-[#FB8500] h-full w-full rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100 flex items-start gap-4">
+                                <div class="bg-white border-2 border-gray-800 rounded-md w-10 h-8 flex items-center justify-center mt-1 shrink-0">
+                                    <i class="ph ph-terminal-window text-gray-800 text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-bold text-gray-800 mb-2 uppercase">Estatística Básica</h3>
+                                    <div class="flex items-center gap-3 w-full">
+                                        <span class="text-sm font-bold text-gray-600 w-10">100%</span>
+                                        <div class="flex-1 bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-[#FB8500] h-full w-full rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 bg-gray-50/50 rounded-[30px] border border-gray-100 p-8 flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-gray-800 mb-10 uppercase tracking-wide text-center">Formação Data Science</h3>
+                        
+                        <div class="flex flex-col relative w-full max-w-[280px]">
+                            <div class="absolute left-[9px] top-3 bottom-8 w-[2px] bg-gray-800"></div>
+
+                            <div class="flex items-center gap-6 mb-8 relative bg-transparent z-10">
+                                <div class="w-5 h-5 border-2 border-gray-800 rounded-sm flex items-center justify-center bg-white shrink-0">
+                                    <i class="ph ph-check text-sm font-bold text-gray-800"></i>
+                                </div>
+                                <span class="text-xs font-bold text-gray-800 uppercase">Introdução ao Python</span>
+                            </div>
+
+                            <div class="flex items-center gap-6 mb-8 relative bg-transparent z-10">
+                                <div class="w-5 h-5 border-2 border-gray-800 rounded-sm flex items-center justify-center bg-white shrink-0"></div>
+                                <span class="text-xs font-bold text-gray-800 uppercase">Limpeza de Dados</span>
+                            </div>
+
+                            <div class="flex items-center gap-6 mb-8 relative bg-transparent z-10">
+                                <div class="w-5 h-5 border-2 border-gray-800 rounded-sm flex items-center justify-center bg-white shrink-0"></div>
+                                <span class="text-xs font-bold text-gray-800 uppercase">Análise de Dados</span>
+                            </div>
+
+                            <div class="flex items-center gap-6 relative bg-transparent z-10">
+                                <div class="w-5 h-5 border-2 border-gray-800 rounded-sm flex items-center justify-center bg-white shrink-0"></div>
+                                <span class="text-xs font-bold text-gray-800 uppercase">Machine Learn</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 mt-12 w-full">
+                    <button onclick="showPlanSuccessModal()" class="bg-[#FB8500] text-white px-6 py-3 rounded-lg font-bold text-sm uppercase shadow-md hover:bg-[#e07600] transition-colors">
+                        Salvar Plano de Estudos
+                    </button>
+                    <button onclick="openPlanModal('modal-view-plans')" class="bg-[#FB8500] text-white px-6 py-3 rounded-lg font-bold text-sm uppercase shadow-md hover:bg-[#e07600] transition-colors">
+                        Visualizar Planos de Estudos
+                    </button>
+                    <button onclick="openPlanModal('modal-criar-plano')" class="bg-[#FB8500] text-white px-6 py-3 rounded-lg font-bold text-sm uppercase shadow-md hover:bg-[#e07600] transition-colors">
+                        Criar Plano de Estudos
+                    </button>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div id="add-note-modal" class="bg-white w-full max-w-[599px] h-auto rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-4 mb-6">
+            <button id="close-modal-btn" class="text-gray-500 hover:text-black transition-colors">
+                <i class="ph ph-arrow-left text-2xl"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-[#FB8500]">Cadastrar nova nota</h2>
+        </div>
+        <form class="space-y-5" onsubmit="event.preventDefault(); closeNoteModal();">
+            <div>
+                <label for="note-name" class="block text-sm font-medium text-gray-700 mb-1">Nome da nota</label>
+                <input type="text" id="note-name" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Resumo de Física">
+            </div>
+            <div>
+                <label for="note-desc" class="block text-sm font-medium text-gray-700 mb-1">Descrição da nota</label>
+                <input type="text" id="note-desc" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]" placeholder="Ex: Fórmulas de MRU e MRUV">
+            </div>
+            <div>
+                <label for="note-type" class="block text-sm font-medium text-gray-700 mb-1">Tipo da nota</label>
+                <div class="relative">
+                    <select id="note-type" class="w-full border border-gray-300 rounded-lg p-2.5 pr-10 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] appearance-none bg-white">
+                        <option>Selecione um tipo</option>
+                        <option>Matemática</option>
+                        <option>Física</option>
+                        <option>Ideias</option>
+                        <option>Pasta: Faculdade</option>
+                    </select>
+                    <i class="ph ph-caret-down text-[#09814A] text-xl absolute top-1/2 right-3 -translate-y-1/2 pointer-events-none"></i>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Cor:</label>
+                <div class="flex flex-wrap gap-3" id="color-palette">
+                    <button type="button" class="color-swatch" style="background-color: #3A506B;" data-color="#3A506B"></button>
+                    <button type="button" class="color-swatch" style="background-color: #1C7258;" data-color="#1C7258"></button>
+                    <button type="button" class="color-swatch" style="background-color: #F2B705;" data-color="#F2B705"></button>
+                    <button type="button" class="color-swatch" style="background-color: #F28C0F;" data-color="#F28C0F"></button>
+                    <button type="button" class="color-swatch" style="background-color: #D93E30;" data-color="#D93E30"></button>
+                    <button type="button" class="color-swatch" style="background-color: #A83E9B;" data-color="#A83E9B"></button>
+                    <button type="button" class="color-swatch" style="background-color: #5E3188;" data-color="#5E3188"></button>
+                    <button type="button" class="color-swatch" style="background-color: #57A6A5;" data-color="#57A6A5"></button>
+                    <button type="button" class="color-swatch" style="background-color: #89D96F;" data-color="#89D96F"></button>
+                    <button type="button" class="color-swatch" style="background-color: #C7F205;" data-color="#C7F205"></button>
+                    <button type="button" class="color-swatch" style="background-color: #F2B279;" data-color="#F2B279"></button>
+                    <button type="button" class="color-swatch" style="background-color: #D973AB;" data-color="#D973AB"></button>
+                    <button type="button" class="color-swatch" style="background-color: #B49FCC;" data-color="#B49FCC"></button>
+                    </div>
+            </div>
+            <div class="flex justify-center pt-4">
+                <button type="submit" class="bg-[#09814A] text-white font-medium px-12 py-2.5 rounded-lg hover:bg-green-800 transition-colors">
+                    Criar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <div id="filter-modal-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="filter-modal" class="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6" onclick="event.stopPropagation()">
@@ -860,277 +1230,446 @@
                     <img src="img/robo aponta.png" alt="Mascote" class="w-24 h-24 object-contain">
                 </div>
             </div>
-
         </div>
     </div>
 
 
+    <div id="deck-modals-overlay" class="modal-overlay hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="closeAllDeckModals()">
+        
+        <div id="modal-criar-deck" class="modal-content hidden bg-white w-full max-w-lg rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 mb-8 justify-center relative">
+                <button onclick="closeAllDeckModals()" class="absolute left-0 w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#FB8500]">Criar novo Deck</h2>
+            </div>
+            <form class="space-y-5" onsubmit="event.preventDefault(); closeAllDeckModals(); showSuccessModal('DECK CRIADO COM SUCESSO!', 'meus');">
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-1">Título do Deck</label>
+                    <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-1">Descrição do Deck</label>
+                    <textarea rows="4" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-2">Você deseja que o Deck seja:</label>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="visibility" class="w-5 h-5 text-[#FB8500] focus:ring-[#FB8500] border-gray-300">
+                            <span class="text-gray-600 font-medium">Público</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="visibility" class="w-5 h-5 text-[#FB8500] focus:ring-[#FB8500] border-gray-300" checked>
+                            <span class="text-gray-600 font-medium">Privado</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-[#FB8500] text-white font-bold px-12 py-2.5 rounded-lg shadow-md hover:bg-[#e07600] transition-colors">CRIAR</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-add-flashcard" class="modal-content hidden bg-white w-full max-w-lg rounded-2xl shadow-xl p-8" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-4 mb-8 justify-center relative">
+                <button onclick="closeAllDeckModals()" class="absolute left-0 w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#FB8500]">Adicionar FlashCard</h2>
+            </div>
+            <form class="space-y-5" onsubmit="event.preventDefault(); closeAllDeckModals(); showSuccessModal('FLASHCARD CRIADO COM SUCESSO!', 'detail');">
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-1">Título do FlashCard</label>
+                    <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-1">Frente do FlashCard</label>
+                    <textarea rows="3" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-500 mb-1">Atrás do FlashCard</label>
+                    <textarea rows="3" required class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500]"></textarea>
+                </div>
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-[#FB8500] text-white font-bold px-12 py-2.5 rounded-lg shadow-md hover:bg-[#e07600] transition-colors">ADICIONAR</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-success-msg" class="modal-content hidden bg-white w-full max-w-md rounded-2xl shadow-xl p-10 flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+            <img src="img/robozinho.png" alt="Robô Sucesso" class="w-32 h-32 mb-6 object-contain">
+            <h2 id="success-msg-title" class="text-2xl font-bold text-[#FB8500] text-center mb-4">MENSAGEM AQUI</h2>
+            <p class="text-gray-500 text-center text-sm mb-6">Acesse a página “Meus Decks” para visualizar.</p>
+            <button id="success-msg-btn" class="text-[#09814A] font-bold hover:underline">Fechar</button>
+        </div>
+    </div>
+
+        <div id="plan-modals-overlay" class="modal-overlay hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="closeAllPlanModals()">
+        
+        <div id="modal-criar-plano" class="modal-content hidden bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-8 lg:p-10" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-center relative mb-8">
+                <button onclick="closeAllPlanModals()" class="absolute left-0 w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-[#FB8500] uppercase tracking-wide">Criar Planos de Estudos</h2>
+            </div>
+
+            <form class="space-y-6" onsubmit="event.preventDefault(); showPlanSuccessModal();">
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Título</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Descrição</label>
+                    <textarea rows="3" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] outline-none" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Pré-requisitos</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] outline-none mb-1">
+                    <div class="text-right"><button type="button" class="text-xs font-bold text-gray-500 hover:text-gray-800">+ adicionar pré-requisito</button></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 mb-1">Etapas</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-md p-2.5 focus:ring-1 focus:ring-[#FB8500] focus:border-[#FB8500] outline-none mb-1">
+                    <div class="text-right"><button type="button" class="text-xs font-bold text-gray-500 hover:text-gray-800">+ adicionar etapas</button></div>
+                </div>
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-[#FB8500] text-white font-bold text-sm px-14 py-3 rounded-lg shadow-md hover:bg-[#e07600] transition-colors uppercase">CRIAR</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="modal-view-plans" class="modal-content hidden bg-white w-full max-w-[500px] h-[600px] flex flex-col rounded-2xl shadow-2xl p-8" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-[#FB8500] uppercase tracking-wide flex-1 text-center ml-10">Planos de Estudos</h2>
+                <button onclick="closeAllPlanModals()" class="w-10 h-10 rounded-full border border-[#FB8500] text-[#FB8500] flex items-center justify-center hover:bg-[#FB8500]/10 transition-colors shrink-0">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </button>
+            </div>
+
+            <div class="relative w-full mb-6">
+                <input type="text" class="block w-full pl-4 pr-10 py-2 border-b border-gray-300 text-sm focus:border-[#FB8500] focus:outline-none placeholder-gray-400 bg-transparent" placeholder="Pesquisar planos de estudos">
+                <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                    <i class="ph ph-magnifying-glass text-[#FB8500] text-lg"></i>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4">
+                <div class="bg-gray-50/80 p-5 rounded-xl border border-gray-100 flex flex-col gap-2">
+                    <h3 class="text-sm font-bold text-[#111] uppercase tracking-wide">Data Science</h3>
+                    <div class="flex items-center gap-3 w-full">
+                        <span class="text-sm font-bold text-gray-700 w-10">25%</span>
+                        <div class="flex-1 bg-gray-300 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-[#FB8500] h-full rounded-full" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50/80 p-5 rounded-xl border border-gray-100 flex flex-col gap-2">
+                    <h3 class="text-sm font-bold text-[#111] uppercase tracking-wide">SQL</h3>
+                    <div class="flex items-center gap-3 w-full">
+                        <span class="text-sm font-bold text-gray-700 w-10">50%</span>
+                        <div class="flex-1 bg-gray-300 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-[#FB8500] h-full rounded-full" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-success-plan" class="modal-content hidden bg-white w-full max-w-md rounded-2xl shadow-2xl p-10 flex flex-col items-center justify-center relative" onclick="event.stopPropagation()">
+            <button onclick="closeAllPlanModals()" class="absolute top-6 right-6 text-[#FB8500] hover:text-[#e07600] transition-colors border border-[#FB8500] rounded-full w-8 h-8 flex items-center justify-center">
+                <i class="ph ph-x"></i>
+            </button>
+            <div class="w-24 h-24 rounded-full border-[4px] border-[#09814A] flex items-center justify-center mb-6 mt-4">
+                <i class="ph ph-check text-5xl text-[#09814A] font-bold"></i>
+            </div>
+            <h2 class="text-lg font-bold text-[#111] text-center mb-4 uppercase tracking-wide">PLANO DE ESTUDOS SALVO COM SUCESSO!</h2>
+        </div>
+
+    </div>
+
     <script>
+    // Seleção de Views e Navs Principais
+    const views = {
+        dashboard: document.getElementById('view-dashboard'),
+        profile: document.getElementById('view-profile'),
+        notes: document.getElementById('view-notes'),
+        noteDetail: document.getElementById('view-note-detail'),
+        calendar: document.getElementById('view-calendar'),
+        decks: document.getElementById('view-decks'),
+        plans: document.getElementById('view-plans') // ADICIONADO
+    };
         
-        
-        const views = {
-            dashboard: document.getElementById('view-dashboard'),
-            profile: document.getElementById('view-profile'),
-            notes: document.getElementById('view-notes'),
-            noteDetail: document.getElementById('view-note-detail'),
-            calendar: document.getElementById('view-calendar') 
-        };
-        
-        const navItems = {
-            dashboard: document.getElementById('nav-dashboard'),
-            calendar: document.getElementById('nav-calendar'), 
-            notes: document.getElementById('nav-notes')
-        };
+    const navItems = {
+        dashboard: document.getElementById('nav-dashboard'),
+        calendar: document.getElementById('nav-calendar'), 
+        notes: document.getElementById('nav-notes'),
+        decks: document.getElementById('nav-decks'),
+        plans: document.getElementById('nav-plans') // ADICIONADO
+    };
 
-        const mainSearch = document.getElementById('main-search');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        const profileArrow = document.getElementById('profile-arrow');
-        
-        
-        const monthPickerBtn = document.getElementById('month-picker-btn');
-        const monthPickerPopover = document.getElementById('month-picker-popover');
+    // Elementos do Header
+    const mainSearch = document.getElementById('main-search');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const profileArrow = document.getElementById('profile-arrow');
+    const profileBtn = document.getElementById('profile-btn');
+    const monthPickerBtn = document.getElementById('month-picker-btn');
+    const monthPickerPopover = document.getElementById('month-picker-popover');
 
-
-        function switchView(viewName) {
-            
-            Object.values(views).forEach(el => {
+    // Função de Troca de Telas 
+    function switchView(viewName) {
+        Object.values(views).forEach(el => {
+            if(el) {
                 el.classList.add('hidden');
                 el.classList.remove('flex'); 
-            });
-
-            
-            const selectedView = views[viewName];
-            if (!selectedView) {
-                console.error("View not found:", viewName);
-                return;
-            }
-            selectedView.classList.remove('hidden');
-            
-            
-            if (viewName === 'profile' || viewName === 'noteDetail' || viewName === 'calendar' || viewName === 'dashboard' || viewName === 'notes') { 
-                selectedView.classList.add('flex');
-            }
-
-           
-            Object.values(navItems).forEach(el => {
-                if(el) el.classList.remove('active');
-            });
-
-            if (viewName === 'notes' || viewName === 'noteDetail') { 
-                if(navItems['notes']) navItems['notes'].classList.add('active');
-            } else if (navItems[viewName]) {
-                 navItems[viewName].classList.add('active');
-            }
-
-            
-            if (viewName === 'notes' || viewName === 'noteDetail') {
-                mainSearch.classList.add('opacity-0', 'pointer-events-none');
-            } else {
-                mainSearch.classList.remove('opacity-0', 'pointer-events-none');
-            }
-
-            
-            profileDropdown.classList.add('hidden');
-            if(profileArrow) profileArrow.classList.remove('rotate-180');
-            if(monthPickerPopover) monthPickerPopover.classList.add('hidden'); // [NOVO]
-        }
-
-       
-        const profileBtn = document.getElementById('profile-btn');
-        
-        if (profileBtn) {
-            profileBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isHidden = profileDropdown.classList.contains('hidden');
-                if (isHidden) {
-                    profileDropdown.classList.remove('hidden');
-                    if(profileArrow) profileArrow.classList.add('rotate-180');
-                } else {
-                    profileDropdown.classList.add('hidden');
-                    if(profileArrow) profileArrow.classList.remove('rotate-180');
-                }
-            });
-        }
-        
-        
-        if (monthPickerBtn) {
-            monthPickerBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                monthPickerPopover.classList.toggle('hidden');
-            });
-        }
-
-        
-        window.addEventListener('click', (e) => {
-            
-            if (profileBtn && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.classList.add('hidden');
-                if(profileArrow) profileArrow.classList.remove('rotate-180');
-            }
-            
-            
-            if (monthPickerBtn && monthPickerPopover && !monthPickerBtn.contains(e.target) && !monthPickerPopover.contains(e.target)) {
-                monthPickerPopover.classList.add('hidden');
             }
         });
 
-
-
-        const btn = document.getElementById('mobile-menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-
-        function toggleMenu() {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+        const selectedView = views[viewName];
+        if (!selectedView) return;
+            
+        selectedView.classList.remove('hidden');
+            
+        // Lista de views que precisam de display: flex
+        if (['profile', 'noteDetail', 'calendar', 'dashboard', 'notes', 'decks', 'plans'].includes(viewName)) { 
+            selectedView.classList.add('flex');
         }
 
-        if (btn) btn.addEventListener('click', toggleMenu);
-        if (overlay) overlay.addEventListener('click', toggleMenu);
+        Object.values(navItems).forEach(el => {
+            if(el) el.classList.remove('active');
+        });
 
-       
-        const ctx = document.getElementById('activityChart');
-        if (ctx) {
-            new Chart(ctx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-                    datasets: [
-                        {
-                            label: 'Atividade Atual',
-                            data: [8000, 12000, 10000, 22000, 20000, 18000, 25000],
-                            borderColor: '#333333',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            pointHoverRadius: 4
-                        },
-                        {
-                            label: 'Média Anterior',
-                            data: [5000, 15000, 18000, 7000, 15000, 28000, 20000],
-                            borderColor: '#B0B0B0',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 30000, ticks: { callback: v => v/1000 + 'K', color: '#9CA3AF', font: { size: 10 } }, grid: { display: false }, border: { display: false } },
-                        x: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 10 } }, border: { display: false } }
-                    }
-                }
+        // Lógica para manter aba ativa se estiver num detalhe
+        if (viewName === 'notes' || viewName === 'noteDetail') { 
+            if(navItems['notes']) navItems['notes'].classList.add('active');
+        } else if (navItems[viewName]) {
+             navItems[viewName].classList.add('active');
+        }
+
+        // Esconder barra de pesquisa nas abas internas
+        if (['notes', 'noteDetail', 'decks', 'plans'].includes(viewName)) {
+            mainSearch.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+            mainSearch.classList.remove('opacity-0', 'pointer-events-none');
+        }
+        
+        profileDropdown.classList.add('hidden');
+        if(profileArrow) profileArrow.classList.remove('rotate-180');
+        if(monthPickerPopover) monthPickerPopover.classList.add('hidden'); 
+    }
+
+    /* -------------------------------------------------------------
+        LÓGICA DOS PLANOS DE ESTUDOS
+    ------------------------------------------------------------- */
+    const planModalsOverlay = document.getElementById('plan-modals-overlay');
+
+    function openPlanModal(modalId) {
+        document.querySelectorAll('#plan-modals-overlay .modal-content').forEach(m => m.classList.add('hidden'));
+        if (planModalsOverlay) planModalsOverlay.classList.remove('hidden');
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAllPlanModals() {
+        if (planModalsOverlay) planModalsOverlay.classList.add('hidden');
+    }
+
+    function showPlanSuccessModal() {
+        openPlanModal('modal-success-plan');
+        setTimeout(() => {
+            closeAllPlanModals();
+        }, 3000); // Fecha após 3 segundos
+    }
+
+    // Fechar clicando fora do modal de planos
+    if (planModalsOverlay) {
+        planModalsOverlay.addEventListener('click', (e) => {
+            if (e.target === planModalsOverlay) closeAllPlanModals();
+        });
+    }
+
+    /* -------------------------------------------------------------
+        LÓGICA DOS DECKS & FLASHCARDS
+    ------------------------------------------------------------- */
+    const deckTabs = {
+        'meus': document.getElementById('deck-tab-meus'),
+        'buscar': document.getElementById('deck-tab-buscar'),
+        'detail': document.getElementById('deck-tab-detail'),
+        'detail-public': document.getElementById('deck-tab-detail-public'),
+        'study': document.getElementById('deck-tab-study')
+    };
+
+    function switchDeckTab(tabName) {
+        Object.values(deckTabs).forEach(tab => {
+            if(tab) {
+                tab.classList.add('hidden');
+                tab.classList.remove('flex');
+            }
+        });
+
+        const selectedTab = deckTabs[tabName];
+        if(selectedTab) {
+            selectedTab.classList.remove('hidden');
+            selectedTab.classList.add('flex');
+        }
+
+        document.querySelectorAll('.deck-btn').forEach(btn => btn.classList.remove('active', 'bg-[#CFCFCF]'));
+        if(tabName === 'meus' || tabName === 'detail') {
+            document.getElementById('btn-tab-meus').classList.add('active', 'bg-[#CFCFCF]');
+        } else if (tabName === 'buscar' || tabName === 'detail-public') {
+            document.getElementById('btn-tab-buscar').classList.add('active', 'bg-[#CFCFCF]');
+        }
+    }
+
+    const deckModalsOverlay = document.getElementById('deck-modals-overlay');
+    
+    function openModalById(modalId) {
+        document.querySelectorAll('#deck-modals-overlay .modal-content').forEach(m => m.classList.add('hidden'));
+        if (deckModalsOverlay) deckModalsOverlay.classList.remove('hidden');
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAllDeckModals() {
+        if (deckModalsOverlay) deckModalsOverlay.classList.add('hidden');
+    }
+
+    function showSuccessModal(msg, redirectToTab) {
+        const titleEl = document.getElementById('success-msg-title');
+        if (titleEl) titleEl.innerText = msg;
+        
+        openModalById('modal-success-msg');
+        
+        const btn = document.getElementById('success-msg-btn');
+        if (btn) {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', () => {
+                closeAllDeckModals();
+                if(redirectToTab) switchDeckTab(redirectToTab);
             });
         }
-        
-       
-        
-        const modalOverlay = document.getElementById('modal-overlay');
-        const openModalBtn1 = document.getElementById('open-modal-btn-1');
-        const openModalBtn2 = document.getElementById('open-modal-btn-2');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const colorPalette = document.getElementById('color-palette');
+    }
 
-        function openModal() {
-            if (modalOverlay) modalOverlay.classList.remove('hidden');
+    /* -------------------------------------------------------------
+        LÓGICA DOS MODAIS (Notas, Eventos, Filtros)
+    ------------------------------------------------------------- */
+    
+    // Modal de Notas
+    const noteModalOverlay = document.getElementById('modal-overlay'); // Alterei o nome para evitar conflitos mentais
+    function openNoteModal() { if (noteModalOverlay) noteModalOverlay.classList.remove('hidden'); }
+    function closeNoteModal() { if (noteModalOverlay) noteModalOverlay.classList.add('hidden'); }
+
+    document.getElementById('open-modal-btn-1')?.addEventListener('click', openNoteModal);
+    document.getElementById('open-modal-btn-2')?.addEventListener('click', openNoteModal);
+    document.getElementById('close-modal-btn')?.addEventListener('click', closeNoteModal);
+    
+    noteModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === noteModalOverlay) closeNoteModal();
+    });
+
+    // Modal de Eventos
+    const eventModalOverlay = document.getElementById('event-modal-overlay');
+    function openEventModal() { if (eventModalOverlay) eventModalOverlay.classList.remove('hidden'); }
+    function closeEventModal() { if (eventModalOverlay) eventModalOverlay.classList.add('hidden'); }
+
+    document.getElementById('open-event-modal-btn')?.addEventListener('click', openEventModal);
+    document.getElementById('close-event-modal-btn')?.addEventListener('click', closeEventModal);
+    
+    eventModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === eventModalOverlay) closeEventModal();
+    });
+
+    // Modal de Filtros
+    const filterModalOverlay = document.getElementById('filter-modal-overlay');
+    function openFilterModal() { if (filterModalOverlay) filterModalOverlay.classList.remove('hidden'); }
+    function closeFilterModal() { if (filterModalOverlay) filterModalOverlay.classList.add('hidden'); }
+
+    document.getElementById('open-filter-modal-btn')?.addEventListener('click', openFilterModal);
+    document.getElementById('close-filter-modal-btn')?.addEventListener('click', closeFilterModal);
+    
+    filterModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === filterModalOverlay) closeFilterModal();
+    });
+
+    // Paletas de Cores
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.addEventListener('click', (e) => {
+            const container = e.target.parentElement;
+            container.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+            e.target.classList.add('selected');
+        });
+    });
+
+    /* -------------------------------------------------------------
+        DROPDOWNS, MENU MOBILE E GRÁFICO
+    ------------------------------------------------------------- */
+    if (profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            profileArrow?.classList.toggle('rotate-180');
+        });
+    }
+    
+    if (monthPickerBtn) {
+        monthPickerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            monthPickerPopover?.classList.toggle('hidden');
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        if (profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+            profileArrow?.classList.remove('rotate-180');
         }
-
-        function closeModal() {
-            if (modalOverlay) modalOverlay.classList.add('hidden');
+        if (monthPickerBtn && monthPickerPopover && !monthPickerBtn.contains(e.target) && !monthPickerPopover.contains(e.target)) {
+            monthPickerPopover.classList.add('hidden');
         }
+    });
 
-        if (openModalBtn1) openModalBtn1.addEventListener('click', openModal);
-        if (openModalBtn2) openModalBtn2.addEventListener('click', openModal);
-        if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-        
-        if (modalOverlay) {
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) {
-                    closeModal();
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMenu() {
+        sidebar?.classList.toggle('-translate-x-full');
+        overlay?.classList.toggle('hidden');
+    }
+
+    mobileMenuBtn?.addEventListener('click', toggleMenu);
+    overlay?.addEventListener('click', toggleMenu);
+
+    
+    const ctx = document.getElementById('activityChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [
+                    { label: 'Atividade Atual', data: [8000, 12000, 10000, 22000, 20000, 18000, 25000], borderColor: '#333333', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, pointHoverRadius: 4 },
+                    { label: 'Média Anterior', data: [5000, 15000, 18000, 7000, 15000, 28000, 20000], borderColor: '#B0B0B0', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], tension: 0.4, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 30000, ticks: { callback: v => v/1000 + 'K', color: '#9CA3AF', font: { size: 10 } }, grid: { display: false }, border: { display: false } },
+                    x: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 10 } }, border: { display: false } }
                 }
-            });
-        }
+            }
+        });
+    }
+    
+    // Inicia a aplicação na Dashboard
+    switchView('dashboard');
+</script>
 
-        if (colorPalette) {
-            colorPalette.addEventListener('click', (e) => {
-                if (e.target.classList.contains('color-swatch')) {
-                    colorPalette.querySelectorAll('.color-swatch').forEach(swatch => {
-                        swatch.classList.remove('selected');
-                    });
-                    e.target.classList.add('selected');
-                }
-            });
-        }
 
-        
-
-        const eventModalOverlay = document.getElementById('event-modal-overlay');
-        const openEventModalBtn = document.getElementById('open-event-modal-btn');
-        const closeEventModalBtn = document.getElementById('close-event-modal-btn');
-        const eventColorPalette = document.getElementById('event-color-palette');
-
-        function openEventModal() {
-            if (eventModalOverlay) eventModalOverlay.classList.remove('hidden');
-        }
-
-        function closeEventModal() {
-            if (eventModalOverlay) eventModalOverlay.classList.add('hidden');
-        }
-
-        if (openEventModalBtn) openEventModalBtn.addEventListener('click', openEventModal);
-        if (closeEventModalBtn) closeEventModalBtn.addEventListener('click', closeEventModal);
-        
-        if (eventModalOverlay) {
-            eventModalOverlay.addEventListener('click', (e) => {
-                if (e.target === eventModalOverlay) {
-                    closeEventModal();
-                }
-            });
-        }
-
-        if (eventColorPalette) {
-            eventColorPalette.addEventListener('click', (e) => {
-                if (e.target.classList.contains('color-swatch')) {
-                    eventColorPalette.querySelectorAll('.color-swatch').forEach(swatch => {
-                        swatch.classList.remove('selected');
-                    });
-                    e.target.classList.add('selected');
-                }
-            });
-        }
-
-       
-
-        const filterModalOverlay = document.getElementById('filter-modal-overlay');
-        const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
-        const closeFilterModalBtn = document.getElementById('close-filter-modal-btn');
-
-        function openFilterModal() {
-            if (filterModalOverlay) filterModalOverlay.classList.remove('hidden');
-        }
-
-        function closeFilterModal() {
-            if (filterModalOverlay) filterModalOverlay.classList.add('hidden');
-        }
-
-        if (openFilterModalBtn) openFilterModalBtn.addEventListener('click', openFilterModal);
-        if (closeFilterModalBtn) closeFilterModalBtn.addEventListener('click', closeFilterModal);
-        
-        if (filterModalOverlay) {
-            filterModalOverlay.addEventListener('click', (e) => {
-                if (e.target === filterModalOverlay) {
-                    closeFilterModal();
-                }
-            });
-        }
-        
-    </script>
 </body>
 </html>
